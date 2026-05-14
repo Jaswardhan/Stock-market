@@ -75,8 +75,7 @@ else:
         data = []
         for t in tickers:
             try:
-                session = utils.get_yf_session()
-                stock = yf.Ticker(t, session=session)
+                stock = yf.Ticker(t)
                 df = stock.history(period="6mo")
                 if not df.empty and len(df) > 30:
                     curr_price = df['Close'].iloc[-1]
@@ -152,8 +151,7 @@ with t_col1:
 with t_col2:
     if setup_ticker:
         with st.spinner("Generating trade plan..."):
-            session = utils.get_yf_session()
-            stock = yf.Ticker(setup_ticker, session=session)
+            stock = yf.Ticker(setup_ticker)
             
             info = stock.info
             name = info.get('shortName', info.get('longName', setup_ticker))

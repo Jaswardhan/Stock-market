@@ -58,14 +58,12 @@ show_patterns = st.sidebar.checkbox("Auto-detect Patterns", value=False)
 
 @st.cache_data(ttl=900, show_spinner=False)
 def fetch_technical_data(ticker, period):
-    session = utils.get_yf_session()
-    stock = yf.Ticker(ticker, session=session)
+    stock = yf.Ticker(ticker)
     return stock.history(period=period)
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def fetch_stock_info(ticker):
-    session = utils.get_yf_session()
-    stock = yf.Ticker(ticker, session=session)
+    stock = yf.Ticker(ticker)
     return stock.info
 
 if current_ticker:

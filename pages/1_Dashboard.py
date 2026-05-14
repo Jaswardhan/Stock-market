@@ -21,8 +21,7 @@ st.title("📊 Intelligent Market Dashboard")
 if current_ticker:
     with st.spinner(f"Fetching data for {current_ticker}..."):
         try:
-            session = utils.get_yf_session()
-            stock = yf.Ticker(current_ticker, session=session)
+            stock = yf.Ticker(current_ticker)
             info = stock.info
             
             # Fetch 1-day 1-minute data for VWAP
@@ -100,8 +99,7 @@ if current_ticker:
                 
             with m_col2:
                 try:
-                    session = utils.get_yf_session()
-                    spy = yf.Ticker("SPY", session=session).history(period="1mo")
+                    spy = yf.Ticker("SPY").history(period="1mo")
                     stock_hist = stock.history(period="1mo")
                     if not spy.empty and not stock_hist.empty:
                         spy_ret = (spy['Close'].iloc[-1] / spy['Close'].iloc[0]) - 1
@@ -170,8 +168,7 @@ if current_ticker:
                 idx_data = []
                 for name, t in indices.items():
                     try:
-                        session = utils.get_yf_session()
-                        hist = yf.Ticker(t, session=session).history(period="2d")
+                        hist = yf.Ticker(t).history(period="2d")
                         if len(hist) >= 2:
                             c = hist['Close'].iloc[-1]
                             p = hist['Close'].iloc[-2]

@@ -31,8 +31,7 @@ def analyze_sentiment(text):
 if current_ticker:
     with st.spinner(f"Analyzing sentiment for {current_ticker}..."):
         try:
-            session = utils.get_yf_session()
-            stock = yf.Ticker(current_ticker, session=session)
+            stock = yf.Ticker(current_ticker)
             
             info = stock.info
             name = info.get('shortName', info.get('longName', current_ticker))
