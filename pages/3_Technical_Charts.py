@@ -56,6 +56,18 @@ st.sidebar.markdown("### Pattern Detection")
 show_sr = st.sidebar.checkbox("Support/Resistance (Swing Highs/Lows)", value=False)
 show_patterns = st.sidebar.checkbox("Auto-detect Patterns", value=False)
 
+@st.cache_data(ttl=900, show_spinner=False)
+def fetch_technical_data(ticker, period):
+    session = utils.get_yf_session()
+    stock = yf.Ticker(ticker, session=session)
+    return stock.history(period=period)
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def fetch_stock_info(ticker):
+    session = utils.get_yf_session()
+    stock = yf.Ticker(ticker, session=session)
+    return stock.info
+
 if current_ticker:
     with st.spinner("Analyzing technicals..."):
         try:
@@ -65,11 +77,11 @@ if current_ticker:
             elif period == "1y":
                 fetch_period = "2y"
                 
-            stock = yf.Ticker(current_ticker)
-            df_full = stock.history(period=fetch_period)
+            df_full_cached = fetch_technical_data(current_ticker, fetch_period)
+            df_full = df_full_cached.copy() if not df_full_cached.empty else df_full_cached
             
             if not df_full.empty:
-                info = stock.info
+                info = fetch_stock_info(current_ticker)
                 name = info.get('shortName', info.get('longName', current_ticker))
                 website = info.get('website', '')
                 logo_html = ""

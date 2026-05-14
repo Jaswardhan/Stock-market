@@ -18,7 +18,8 @@ st.markdown("Detailed stock analysis and profile information.")
 if current_ticker:
     with st.spinner(f"Fetching data for {current_ticker}..."):
         try:
-            stock = yf.Ticker(current_ticker)
+            session = utils.get_yf_session()
+            stock = yf.Ticker(current_ticker, session=session)
             info = stock.info
             
             if 'symbol' not in info and 'shortName' not in info:

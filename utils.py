@@ -4,6 +4,29 @@ from datetime import datetime
 import os
 import pandas as pd
 import pytz
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+@st.cache_resource
+def get_yf_session():
+    session = requests.Session()
+    session.headers.update({
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    })
+    # Add retry logic to handle 429 Too Many Requests
+    retry = Retry(
+        total=5,
+        read=5,
+        connect=5,
+        backoff_factor=1,
+        status_forcelist=[ 429, 500, 502, 503, 504 ]
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
 
 CURRENCIES = {
     "USD ($)": {"code": "USD", "symbol": "$"},
@@ -20,7 +43,8 @@ def get_exchange_rate(target_code):
     try:
         # e.g. "EUR=X" is Yahoo's ticker for USD to EUR
         ticker_str = f"{target_code}=X"
-        rate = yf.Ticker(ticker_str).history(period="1d")['Close'].iloc[-1]
+        session = get_yf_session()
+        rate = yf.Ticker(ticker_str, session=session).history(period="1d")['Close'].iloc[-1]
         return float(rate)
     except Exception as e:
         # Fallback if yfinance fails

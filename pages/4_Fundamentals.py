@@ -29,7 +29,8 @@ def color_metric(val, benchmark, lower_is_better=True):
 if current_ticker:
     with st.spinner(f"Fetching full research report for {current_ticker}..."):
         try:
-            stock = yf.Ticker(current_ticker)
+            session = utils.get_yf_session()
+            stock = yf.Ticker(current_ticker, session=session)
             info = stock.info
             
             # Add a header with current price and company name
